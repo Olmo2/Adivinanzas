@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Adivinanzas</string>
+    <string name="adivinanza"></string>
+    <string name="Respuesta"> Respuesta</string>
+    <string name="Fallos">Fallos</string>
+    <string name="Comprobar">Comprobar</string>
+    <string name="Aciertos">Aciertos</string>
+    <string name="Intentos">Intentos restantes</string>
+</resources>
