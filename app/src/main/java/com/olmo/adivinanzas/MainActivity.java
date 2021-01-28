@@ -2,18 +2,22 @@ package com.olmo.adivinanzas;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -24,29 +28,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView fallos,aciertos,intentos;
     EditText respuesta;
     Button comprobar;
-    int index;
-    Integer numFallos, numIntentos;
+    int contador;
+    Integer[] index;
+    Integer numFallos, numIntentos, numAciertos;
     String resp, aux;
     int r;
     ArrayList<Integer> usados;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        numFallos = 0;
+        numFallos = numAciertos =  0;
         numIntentos = 3;
         adivinanza = (TextView) findViewById(R.id.adivinanza);
         respuesta = (EditText) findViewById(R.id.respuesta);
         fallos = (TextView) findViewById(R.id.numFallos);
         aciertos = (TextView) findViewById(R.id.numAciertos);
         intentos =  (TextView) findViewById(R.id.numIntentos);
+        intentos.setText(numIntentos.toString());
+        aciertos.setText("0");
+        fallos.setText("0");
+
+
         aux = "";
         usados = new ArrayList();
 
         comprobar = (Button) findViewById(R.id.buttonComprobar);
         comprobar.setOnClickListener(this);
-        index = 0;
+        contador = 0;
         list = new ArrayList<>();
         /*1*/list.add("Cuál es la estrella que no tiene luz");
         /*2*/list.add("Vuelo de noche, duermo en el día y nunca veras plumas en ala mía");
@@ -57,7 +68,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         map.put("Vuelo de noche, duermo en el día y nunca veras plumas en ala mía", "murcielago");
         map.put("Qué cosa es que cuanto más le quitas más grande es", "agujero");
         map.put("No es más grande que una nuez, sube al monte y no tiene pies.", "caracol");
-        adivinanza.setText(list.get(index));
+        adivinanza.setText(list.get(contador));
+
+
+
+        intent = getIntent();
+
+        if(intent.getBooleanExtra("orden",true)){
+            for(int i =0; i<list.size();i++){
+
+            }
+        }
 
 
     }
@@ -67,8 +88,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
 
             case R.id.buttonComprobar:
-                /*Obtenemos la respuesta correcta
-                * ç*/
+
+                if(numIntentos>1){
+                /*Obtenemos la respuesta correcta*/
                 resp = map.get(adivinanza.getText().toString());
 
                 System.out.println(resp);
@@ -81,11 +103,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 /*Si respuesta correcta*/
                 if (respuesta.getText().toString().toLowerCase().contains(resp)) {
-                    index++;
+                    contador++;
                     numIntentos=3;
-                    if (index < list.size()) {
+                    numAciertos++;
+                    aciertos.setText(numAciertos.toString());
+                    if (contador < list.size()) {
                         respuesta.setText("");
-                        adivinanza.setText(list.get(index));
+                        adivinanza.setText(list.get(contador));
                     } else {
                         adivinanza.setText("Ya no hay más :(");
                     }
@@ -109,10 +133,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             + aux.substring(r + 1);
                     respuesta.setText("");
                     respuesta.setHint(aux);
-
+                    intentos.setText(numIntentos.toString());
                     fallos.setText(numFallos.toString());
+                }
+                /*Si haces más de 3 intentos*/
+                }else{
+                    contador++;
+                    numIntentos=3;
+                    if (contador < list.size()) {
+                        respuesta.setText("");
+                        respuesta.setHint("");
+                        adivinanza.setText(list.get(contador));
+                        Toast respuestaCorrecto = Toasty.success(this, "La respuesta era:" + resp, Toast.LENGTH_SHORT, false);
+                        respuestaCorrecto.setGravity(Gravity.CENTER,0,750);
+                        respuestaCorrecto.show();
+                       numIntentos=3;
+                       intentos.setText(numIntentos.toString());
+                    } else {
+                        adivinanza.setText("Ya no hay más :(");
                 }
                 break;
         }
     }
-}
+}}
