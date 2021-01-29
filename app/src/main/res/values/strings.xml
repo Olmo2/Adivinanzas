@@ -10,4 +10,5 @@
     <string name="normal">Normal</string>
     <string name="Bienvenida">Bienvenid@ al juego de las Adivinanzas</string>
     <string name="texto">Tienes 3 intentos para resolver cada pregunta, una vez acabados te dirá la respuesta :)</string>
+    <string name="Volver">Volver</string>
 </resources>

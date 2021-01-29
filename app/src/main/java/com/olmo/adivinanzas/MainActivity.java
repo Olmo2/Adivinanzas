@@ -27,37 +27,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView adivinanza;
     TextView fallos,aciertos,intentos;
     EditText respuesta;
-    Button comprobar;
+    Button comprobar, volver;
     int contador;
-    Integer[] index;
+    ArrayList<Integer> index;
     Integer numFallos, numIntentos, numAciertos;
     String resp, aux;
     int r;
     ArrayList<Integer> usados;
     Intent intent;
+    Random random;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        numFallos = numAciertos =  0;
-        numIntentos = 3;
+
+        /*TEXTOS*/
         adivinanza = (TextView) findViewById(R.id.adivinanza);
         respuesta = (EditText) findViewById(R.id.respuesta);
         fallos = (TextView) findViewById(R.id.numFallos);
         aciertos = (TextView) findViewById(R.id.numAciertos);
         intentos =  (TextView) findViewById(R.id.numIntentos);
-        intentos.setText(numIntentos.toString());
-        aciertos.setText("0");
-        fallos.setText("0");
 
-
-        aux = "";
-        usados = new ArrayList();
-
+        /*BOTONES*/
         comprobar = (Button) findViewById(R.id.buttonComprobar);
         comprobar.setOnClickListener(this);
-        contador = 0;
+        volver = (Button) findViewById(R.id.buttonVolver);
+        volver.setOnClickListener(this);
+        volver.setVisibility(View.INVISIBLE);
+
+        /*DATOS*/
         list = new ArrayList<>();
         /*1*/list.add("Cuál es la estrella que no tiene luz");
         /*2*/list.add("Vuelo de noche, duermo en el día y nunca veras plumas en ala mía");
@@ -68,18 +67,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         map.put("Vuelo de noche, duermo en el día y nunca veras plumas en ala mía", "murcielago");
         map.put("Qué cosa es que cuanto más le quitas más grande es", "agujero");
         map.put("No es más grande que una nuez, sube al monte y no tiene pies.", "caracol");
-        adivinanza.setText(list.get(contador));
 
-
-
+        /*INICIALIZACION DE VARIABLES*/
+        numFallos = numAciertos = contador = 0;
+        numIntentos = 3;
+        aux = "";
+        random = new Random();
+        index = new ArrayList<>();
+        usados = new ArrayList();
         intent = getIntent();
+
+        /*VALORES INICIALES*/
+        intentos.setText(numIntentos.toString());
+        aciertos.setText(numFallos.toString());
+        fallos.setText(numAciertos.toString());
+
+
 
         if(intent.getBooleanExtra("orden",true)){
             for(int i =0; i<list.size();i++){
-
+                index.add(i);
+            }
+        }else{
+            int i=0;
+            while(i< list.size()){
+                r = random.nextInt(list.size());
+                if(!index.contains(r)){
+                    index.add(r);
+                    i++;
+                }
             }
         }
+        for(int i =0; i<index.size();i++){
+            System.out.println(index.get(i));
+        }
 
+        adivinanza.setText(list.get(index.get(0)));
 
     }
 
@@ -94,14 +117,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 resp = map.get(adivinanza.getText().toString());
 
                 System.out.println(resp);
-                Random random = new Random();
+
                 r = random.nextInt(resp.length());
                 while (usados.contains(r)) {
                     r = random.nextInt(resp.length());
                 }
                 usados.add(r);
 
-                /*Si respuesta correcta*/
+                /*RESPUESTA CORRECTA*/
                 if (respuesta.getText().toString().toLowerCase().contains(resp)) {
                     contador++;
                     numIntentos=3;
@@ -115,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
 
 
-                    /*si respuesta incorrecta*/
+                    /*RESPUESTA INCORRECTA*/
                 } else {
                     numFallos++;
                     if (numIntentos == 3) {
@@ -136,23 +159,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     intentos.setText(numIntentos.toString());
                     fallos.setText(numFallos.toString());
                 }
-                /*Si haces más de 3 intentos*/
-                }else{
+                /*SI FALLAS 3 VECES*/
+                }else {
                     contador++;
-                    numIntentos=3;
+                    numIntentos = 3;
                     if (contador < list.size()) {
                         respuesta.setText("");
                         respuesta.setHint("");
-                        adivinanza.setText(list.get(contador));
+                        adivinanza.setText(list.get(index.get(contador)));
                         Toast respuestaCorrecto = Toasty.success(this, "La respuesta era:" + resp, Toast.LENGTH_SHORT, false);
-                        respuestaCorrecto.setGravity(Gravity.CENTER,0,750);
+                        respuestaCorrecto.setGravity(Gravity.CENTER, 0, 750);
                         respuestaCorrecto.show();
-                       numIntentos=3;
-                       intentos.setText(numIntentos.toString());
+                        numIntentos = 3;
+                        intentos.setText(numIntentos.toString());
                     } else {
                         adivinanza.setText("Ya no hay más :(");
+                        respuesta.setHint("");
+                        volver.setVisibility(View.VISIBLE);
+                    }
                 }
                 break;
-        }
+
+            case R.id.buttonVolver:
+                finish();
+                break;
     }
-}}
+}
+        public void iniciar(){
+
+
+
+
+        }
+
+
+}
